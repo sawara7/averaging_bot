@@ -1,0 +1,25 @@
+{
+  "name": "averaging_bot",
+  "version": "1.0.0",
+  "description": "ドルコスト平均法で購入する",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/sawara7/averaging_bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sawara7/averaging_bot/issues"
+  },
+  "homepage": "https://github.com/sawara7/averaging_bot#readme",
+  "dependencies": {
+    "firebase-admin": "^8.8.0",
+    "log4js": "^6.1.0",
+    "node-bitbankcc": "^2.1.1",
+    "path": "^0.12.7"
+  }
+}

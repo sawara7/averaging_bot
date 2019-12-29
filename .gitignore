@@ -1,0 +1,10 @@
+_settings.js
+serviceAccountKey.json
+package-lock.json
+
+.vscode
+node_modules
+/backtest/*.csv
+/log/*
+*.pyc
+backtest/memo
