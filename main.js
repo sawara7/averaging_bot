@@ -1,6 +1,6 @@
 'use strict';
 
-const logic = require("./bitbank-averaging");
+const logic = require("./bitbank-averaging2");
 const settings = require("./_settings");
 const logger = require("./logger");
 
@@ -13,7 +13,7 @@ const logger = require("./logger");
                 await logic.doExecute(
                     l.PAIR,
                     l.AMOUNT,
-                    l.PROFIT_RATE,
+                    l.PERIOD,
                     l.INITIAL_RATE);
             }
         }, settings.INTERVAL
