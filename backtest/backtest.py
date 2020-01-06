@@ -3,7 +3,7 @@ from position import Position
 
 params = {
     "interval"              : 1440*28,
-    "buy_amount"            : 50,
+    "buy_amount"            : 100,
     "historical_interval"   : 1440,
     # "profit_rate"           : 0.015,
     # "range"                 : 1000,

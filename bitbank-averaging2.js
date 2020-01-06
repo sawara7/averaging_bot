@@ -1,20 +1,42 @@
 const bitbank  = require("./bitbank");
 const firebase = require("./firebase");
 const logger   = require("./logger");
+const utils    = require("./utils/utils")
 const sta      = require("simple-statistics");
 const FIREBASAE_BOT_BITBANK = "/bot/bitbank_averaging_std/";
 
 exports.doExecute = async(pair, amount, period, ini_rate) => {
     // Get previous data
     let data = await firebase.getData(FIREBASAE_BOT_BITBANK + pair);
+
+    // ボットの名前
+    let name = ("name" in data) ? data.name :"AVERAGING-STD-BOT/BITBANK";
+
+    // 初期パラメータ
+    let initial_rate        = ("initial_rate" in data) ? data.initial_rate :ini_rate;
+    let period              = ("period" in data) ? data.period :period;
+    let amount              = ("amount" in data) ? data.amount :amount;
+    let pair                = ("pair" in data) ? data.pair :pair;
+
+    // 途中計算で必要なパラメータ
+    let order_id_sell       = ("order_id_sell" in data) ? data.order_id_sell :0;
+    let order_id_buy        = ("order_id_buy" in data) ? data.order_id_buy :0;
     let total_amount        = ("total_amount" in data) ? data.total_amount :0;
     let position_price      = ("position_price" in data) ? data.position_price :0;
     let position_sell_price = ("position_sell_price" in data) ? data.position_sell_price :0;
-    let order_id_sell       = ("order_id_sell" in data) ? data.order_id_sell :0;
-    let order_id_buy        = ("order_id_buy" in data) ? data.order_id_buy :0;
+
+    // 統計データ
     let total_profit        = ("total_profit" in data) ? data.total_profit :0;
-    let initial_rate        = ("initial_rate" in data) ? data.initial_rate :ini_rate;
     let sell_price_array    = ("sell_price_array" in data) ? data.sell_price_array :[];
+    let results             = ("results" in data) ? data.sell_price_array :{};
+
+    let current_date = utils.getNowYMD();
+    if (!(current_date in results)){
+        results[current_date] = {
+            "profit"     : 0,
+            "sell_count" : 0
+        }
+    }
 
     // Check order result (buy)
     let buy_order;
@@ -48,12 +70,14 @@ exports.doExecute = async(pair, amount, period, ini_rate) => {
         order_id_sell = 0;
     }
 
-    // update
+    // UPDATE
     position_price = (position_price * (total_amount - sell_amount) + buy_price * buy_amount) / (total_amount + buy_amount - sell_amount);
     total_amount = total_amount + buy_amount - sell_amount;
 
     if (sell_order){
         total_profit += (sell_price - position_sell_price) * sell_amount;
+        results[current_date].profit += (sell_price - position_sell_price) * sell_amount;
+        results[current_date].sell_count += 1;
     }
 
     if (total_amount < 0.0001){
@@ -100,17 +124,18 @@ exports.doExecute = async(pair, amount, period, ini_rate) => {
     }
 
     // Set Data
-    let current_date = new Date();
     let update_data = {
-        'total_amount' : total_amount,
-        'position_price' : position_price,
+        'total_amount'        : total_amount,
+        'position_price'      : position_price,
         'position_sell_price' : position_sell_price,
-        'order_id_sell' : order_id_sell,
-        'order_id_buy' : order_id_buy,
-        'total_profit' : total_profit,
-        'last_update'  : current_date.getHours() + ':' + current_date.getMinutes(),
-        'initial_rate' : initial_rate,
-        'sell_price_array' : sell_price_array
+        'order_id_sell'       : order_id_sell,
+        'order_id_buy'        : order_id_buy,
+        'total_profit'        : total_profit,
+        'last_update'         : current_date,
+        'initial_rate'        : initial_rate,
+        'sell_price_array'    : sell_price_array,
+        'results'             : results,
+        'name'                : name
     }
     await firebase.setData(FIREBASAE_BOT_BITBANK + pair, update_data);
     logger.console.info(update_data);
