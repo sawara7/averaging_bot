@@ -2,11 +2,9 @@ import csv
 from position import Position
 
 params = {
-    "interval"              : 1440*28,
-    "buy_amount"            : 100,
-    "historical_interval"   : 1440,
-    # "profit_rate"           : 0.015,
-    # "range"                 : 1000,
+    "interval"              : 1440*30,
+    "buy_amount"            : 50,
+    "historical_interval"   : 1440*30,
     "initial_rate"          : 0.08
     }
 
